@@ -1,0 +1,49 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  creationTimestamp: null
+  name: test-component--byzu
+  namespace: build-templates-e2e
+spec:
+  params:
+  - name: git-revision
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      annotations:
+        build.appstudio.openshift.io/application: test-app-sury
+        build.appstudio.openshift.io/build: "true"
+        build.appstudio.openshift.io/component: test-component--byzu
+        build.appstudio.openshift.io/type: build
+        build.appstudio.openshift.io/version: "0.1"
+        pipelines.appstudio.openshift.io/type: build
+      creationTimestamp: null
+      generateName: test-component--byzu-
+      labels:
+        build.appstudio.openshift.io/application: test-app-sury
+        build.appstudio.openshift.io/build: "true"
+        build.appstudio.openshift.io/component: test-component--byzu
+        build.appstudio.openshift.io/type: build
+        build.appstudio.openshift.io/version: "0.1"
+        pipelines.appstudio.openshift.io/type: build
+      namespace: build-templates-e2e
+    spec:
+      params:
+      - name: git-url
+        value: https://github.com/psturc/devfile-sample-code-with-quarkus
+      - name: output-image
+        value: quay.io/redhat-appstudio/test-images:d1b888595d0143e4ba0376fdc673eb52-$(tt.params.git-revision)
+      pipelineRef:
+        bundle: quay.io/redhat-appstudio/pull-request-builds:hacbs-ea91382cd705cfb2277d328c57cbd05b52bff7de
+        name: java-builder
+      workspaces:
+      - name: workspace
+        persistentVolumeClaim:
+          claimName: appstudio
+        subPath: test-component--byzu/$(tt.params.git-revision)
+      - name: registry-auth
+        secret:
+          secretName: redhat-appstudio-registry-pull-secret
+    status: {}
+status: {}
