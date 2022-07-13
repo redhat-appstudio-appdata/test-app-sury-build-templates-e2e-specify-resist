@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app.kubernetes.io/created-by: application-service
+    app.kubernetes.io/instance: test-component--nmdv
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: test-component--nmdv
+    app.kubernetes.io/part-of: test-app-sury
+  name: test-component--nmdv
+  namespace: build-templates-e2e
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: test-component--nmdv
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/instance: test-component--nmdv
+    spec:
+      containers:
+      - image: quay.io/redhat-appstudio/test-images:6e2ccf2ef0ba4449a1b945c652a1ba06
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8081
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        name: container-image
+        ports:
+        - containerPort: 8081
+        readinessProbe:
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          tcpSocket:
+            port: 8081
+        resources: {}
+status: {}
